@@ -34,12 +34,16 @@ class _MyHomePageState extends State<MyHomePage> {
   final int _cat = -1;
   int _winner = -1;
   int _turnCounter = 0;
-  bool _isPlayerTurn = false;
+  bool _isPlayerTurn = true;
   bool _gameIsOver = false;
   final IconData _computerIcon = Icons.close_outlined;
   final IconData _playerIcon = Icons.circle_outlined;
   final IconData _defaultIcon = Icons.crop_3_2_outlined;
   late List<List<GameTile>> _tiles;
+  String _selectedValue = "human";
+  String _playerOneWinMessage = "Player O Won!!";
+  String _playerTwoWinMessage = "Player X Won!!";
+  final String _catWinMessage = "The Cat Won and you both lost!!";
 
   _MyHomePageState() {
     _tiles = [
@@ -47,8 +51,27 @@ class _MyHomePageState extends State<MyHomePage> {
       [GameTile(), GameTile(), GameTile()],
       [GameTile(), GameTile(), GameTile()]
     ];
+  }
+
+
+
+  void _computersTurn(){
     Random random = Random();
-    _isPlayerTurn = random.nextInt(2) == 1;
+    int row = random.nextInt(3);
+    int col = random.nextInt(3);
+    while(!_tiles[row][col].enabled){
+      row = random.nextInt(3);
+      col = random.nextInt(3);
+    }
+    _tiles[row][col].icon = (_isPlayerTurn) ? _playerIcon : _computerIcon;
+    _tiles[row][col].enabled = false;
+    _gameIsOver = getGameIsOver();
+    if (!_gameIsOver) {
+      _isPlayerTurn = !_isPlayerTurn;
+    } else {
+      return;
+    }
+    _turnCounter += 1;
   }
 
   void _makePlay(int row, int col) {
@@ -57,8 +80,18 @@ class _MyHomePageState extends State<MyHomePage> {
     _gameIsOver = getGameIsOver();
     if (!_gameIsOver) {
       _isPlayerTurn = !_isPlayerTurn;
+    } else {
+      return;
     }
     _turnCounter += 1;
+    if(_selectedValue == "computer") {
+      _playerOneWinMessage = "You Won!!!";
+      _playerTwoWinMessage = "The Computer Won!!";
+      _computersTurn();
+    } else {
+      _playerOneWinMessage = "Player O Won!!";
+      _playerTwoWinMessage = "Player X Won!!";
+    }
   }
 
   bool getGameIsOver() {
@@ -94,14 +127,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool diagonalIsEqual() {
-    if (_tiles[0][0].icon == _defaultIcon ||
-        _tiles[0][2].icon == _defaultIcon) {
-      return false;
-    }
     return (_tiles[0][0].icon == _tiles[1][1].icon &&
-            _tiles[1][1].icon == _tiles[2][2].icon) ||
+            _tiles[1][1].icon == _tiles[2][2].icon && _tiles[0][0].icon != _defaultIcon) ||
         (_tiles[0][2].icon == _tiles[1][1].icon &&
-            _tiles[1][1].icon == _tiles[2][0].icon);
+            _tiles[1][1].icon == _tiles[2][0].icon && _tiles[0][2].icon != _defaultIcon);
   }
 
   @override
@@ -114,7 +143,51 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text(
+                "Welcome To A Game of Tic-Tac-Toe.",
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            const Text(
+              "Choose your opponent then touch or click",
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 20),
+              child: Center(
+                child: Text(
+                  "a game tile to play the game.",
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Column(
+              children: [
+                ListTile(
+                  visualDensity: const VisualDensity(vertical: -4),
+                  title: const Text('Human'),
+                  leading: Radio(
+                    value: 'human',
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() { _selectedValue = value as String; });
+                    },
+                  ),
+                ),
+                ListTile(
+                  visualDensity: const VisualDensity(vertical: -4),
+                  title: const Text('Computer'),
+                  leading: Radio(
+                    value: 'computer',
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() { _selectedValue = value as String; });
+                    },
+                  ),
+                ),
+              ],
+            ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(_tiles[0][0].icon),
@@ -149,6 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(_tiles[1][0].icon),
@@ -183,6 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(_tiles[2][0].icon),
@@ -216,13 +291,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            Text((_gameIsOver)
-                ? (_winner == 0)
-                    ? "Player Won!"
-                    : (_winner == 1)
-                        ? "Computer Won!!"
-                        : "Cat Won!!"
-                : ""),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Text((_gameIsOver)
+                  ? (_winner == 0)
+                      ? _playerOneWinMessage
+                      : (_winner == 1)
+                          ? _playerTwoWinMessage
+                          : _catWinMessage
+                  : "",
+                style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
+            ),
           ],
         ),
       ),
@@ -257,6 +336,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _resetBooleanValues() {
     _gameIsOver = false;
+    _isPlayerTurn = true;
   }
 }
 
