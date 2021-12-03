@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final int _cat = -1;
   int _winner = -1;
   int _turnCounter = 0;
-  bool _isPlayerTurn = false;
+  bool _isPlayerTurn = true;
   bool _gameIsOver = false;
   final IconData _computerIcon = Icons.close_outlined;
   final IconData _playerIcon = Icons.circle_outlined;
@@ -47,8 +47,27 @@ class _MyHomePageState extends State<MyHomePage> {
       [GameTile(), GameTile(), GameTile()],
       [GameTile(), GameTile(), GameTile()]
     ];
+  }
+
+
+
+  void _computersTurn(){
     Random random = Random();
-    _isPlayerTurn = random.nextInt(2) == 1;
+    int row = random.nextInt(3);
+    int col = random.nextInt(3);
+    while(!_tiles[row][col].enabled){
+      row = random.nextInt(3);
+      col = random.nextInt(3);
+    }
+    _tiles[row][col].icon = (_isPlayerTurn) ? _playerIcon : _computerIcon;
+    _tiles[row][col].enabled = false;
+    _gameIsOver = getGameIsOver();
+    if (!_gameIsOver) {
+      _isPlayerTurn = !_isPlayerTurn;
+    } else {
+      return;
+    }
+    _turnCounter += 1;
   }
 
   void _makePlay(int row, int col) {
@@ -57,8 +76,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _gameIsOver = getGameIsOver();
     if (!_gameIsOver) {
       _isPlayerTurn = !_isPlayerTurn;
+    } else {
+      return;
     }
     _turnCounter += 1;
+    _computersTurn();
   }
 
   bool getGameIsOver() {
@@ -275,6 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _resetBooleanValues() {
     _gameIsOver = false;
+    _isPlayerTurn = true;
   }
 }
 
