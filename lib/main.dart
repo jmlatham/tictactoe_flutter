@@ -40,6 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final IconData _playerIcon = Icons.circle_outlined;
   final IconData _defaultIcon = Icons.crop_3_2_outlined;
   late List<List<GameTile>> _tiles;
+  String _selectedValue = "human";
+  String _playerOneWinMessage = "Player O Won!!";
+  String _playerTwoWinMessage = "Player X Won!!";
+  final String _catWinMessage = "The Cat Won and you both lost!!";
 
   _MyHomePageState() {
     _tiles = [
@@ -80,7 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
     _turnCounter += 1;
-    _computersTurn();
+    if(_selectedValue == "computer") {
+      _playerOneWinMessage = "You Won!!!";
+      _playerTwoWinMessage = "The Computer Won!!";
+      _computersTurn();
+    } else {
+      _playerOneWinMessage = "Player O Won!!";
+      _playerTwoWinMessage = "Player X Won!!";
+    }
   }
 
   bool getGameIsOver() {
@@ -140,12 +151,44 @@ class _MyHomePageState extends State<MyHomePage> {
                 "Welcome To A Game of Tic-Tac-Toe.",
                 style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
+            const Text(
+              "Choose your opponent then touch or click",
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+            ),
             const Padding(
               padding: EdgeInsets.only(bottom: 20),
-              child: Text(
-                "Touch or click a game tile to play the game.",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+              child: Center(
+                child: Text(
+                  "a game tile to play the game.",
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+                ),
               ),
+            ),
+            Column(
+              children: [
+                ListTile(
+                  visualDensity: const VisualDensity(vertical: -4),
+                  title: const Text('Human'),
+                  leading: Radio(
+                    value: 'human',
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() { _selectedValue = value as String; });
+                    },
+                  ),
+                ),
+                ListTile(
+                  visualDensity: const VisualDensity(vertical: -4),
+                  title: const Text('Computer'),
+                  leading: Radio(
+                    value: 'computer',
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() { _selectedValue = value as String; });
+                    },
+                  ),
+                ),
+              ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -256,10 +299,10 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text((_gameIsOver)
                   ? (_winner == 0)
-                      ? "Player Won!"
+                      ? _playerOneWinMessage
                       : (_winner == 1)
-                          ? "Computer Won!!"
-                          : "Cat Won!!"
+                          ? _playerTwoWinMessage
+                          : _catWinMessage
                   : "",
                 style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
             ),
