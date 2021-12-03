@@ -127,14 +127,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool diagonalIsEqual() {
-    if (_tiles[0][0].icon == _defaultIcon ||
-        _tiles[0][2].icon == _defaultIcon) {
-      return false;
-    }
     return (_tiles[0][0].icon == _tiles[1][1].icon &&
-            _tiles[1][1].icon == _tiles[2][2].icon) ||
+            _tiles[1][1].icon == _tiles[2][2].icon && _tiles[0][0].icon != _defaultIcon) ||
         (_tiles[0][2].icon == _tiles[1][1].icon &&
-            _tiles[1][1].icon == _tiles[2][0].icon);
+            _tiles[1][1].icon == _tiles[2][0].icon && _tiles[0][2].icon != _defaultIcon);
   }
 
   @override
