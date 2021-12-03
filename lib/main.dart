@@ -114,7 +114,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text(
+                "Welcome To A Game of Tic-Tac-Toe.",
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 20),
+              child: Text(
+                "Touch or click a game tile to play the game.",
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+              ),
+            ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(_tiles[0][0].icon),
@@ -149,6 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(_tiles[1][0].icon),
@@ -183,6 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(_tiles[2][0].icon),
@@ -216,13 +230,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            Text((_gameIsOver)
-                ? (_winner == 0)
-                    ? "Player Won!"
-                    : (_winner == 1)
-                        ? "Computer Won!!"
-                        : "Cat Won!!"
-                : ""),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Text((_gameIsOver)
+                  ? (_winner == 0)
+                      ? "Player Won!"
+                      : (_winner == 1)
+                          ? "Computer Won!!"
+                          : "Cat Won!!"
+                  : "",
+                style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
+            ),
           ],
         ),
       ),
