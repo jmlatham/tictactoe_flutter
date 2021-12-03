@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -37,77 +36,72 @@ class _MyHomePageState extends State<MyHomePage> {
   int _turnCounter = 0;
   bool _isPlayerTurn = false;
   bool _gameIsOver = false;
-  bool _topEnabled = true;
-  bool _rightEnabled = true;
-  bool _bottomEnabled = true;
-  bool _leftEnabled = true;
-  bool _topLeftEnabled = true;
-  bool _topRightEnabled = true;
-  bool _bottomLeftEnabled = true;
-  bool _bottomRightEnabled = true;
-  bool _centerEnabled = true;
   final IconData _computerIcon = Icons.close_outlined;
   final IconData _playerIcon = Icons.circle_outlined;
   final IconData _defaultIcon = Icons.crop_3_2_outlined;
-  late List<List<IconData>> _values; //= List<List<IconData>>.generate(3, (_) => List<IconData>.filled(3, _defaultIcon, growable: false));
+  late List<List<GameTile>> _tiles;
 
-  _MyHomePageState(){
-    _values = List<List<IconData>>.generate(3, (_) => List<IconData>.filled(3, _defaultIcon, growable: false));
+  _MyHomePageState() {
+    _tiles = [
+      [GameTile(), GameTile(), GameTile()],
+      [GameTile(), GameTile(), GameTile()],
+      [GameTile(), GameTile(), GameTile()]
+    ];
     Random random = Random();
     _isPlayerTurn = random.nextInt(2) == 1;
   }
 
-  void _makePlay(int row, int col){
-    _values[row][col] = (_isPlayerTurn)?_playerIcon:_computerIcon;
+  void _makePlay(int row, int col) {
+    _tiles[row][col].icon = (_isPlayerTurn) ? _playerIcon : _computerIcon;
+    _tiles[row][col].enabled = false;
     _gameIsOver = getGameIsOver();
-    if(!_gameIsOver){
+    if (!_gameIsOver) {
       _isPlayerTurn = !_isPlayerTurn;
     }
     _turnCounter += 1;
   }
 
-  bool getGameIsOver(){
-    _winner = (_isPlayerTurn)? _player : _computer;
-    for(var i = 0; i < 3; i++){
+  bool getGameIsOver() {
+    _winner = (_isPlayerTurn) ? _player : _computer;
+    for (var i = 0; i < 3; i++) {
       if (rowIsEqual(i)) return true;
     }
-    for(var i = 0; i < 3; i++){
+    for (var i = 0; i < 3; i++) {
       if (colIsEqual(i)) return true;
     }
-    if(diagonalIsEqual()){
+    if (diagonalIsEqual()) {
       return true;
     }
-    if(_turnCounter > 7){
+    if (_turnCounter > 7) {
       _winner = _cat;
       return true;
     }
     return false;
   }
 
-  bool rowIsEqual(int row){
-    return !_values[row].contains(_defaultIcon) && _values[row][0] == _values[row][1] &&
-    _values[row][0] == _values[row][2];
+  bool rowIsEqual(int row) {
+    return _tiles[row][0].icon != _defaultIcon &&
+        _tiles[row][0].icon == _tiles[row][1].icon &&
+        _tiles[row][0].icon == _tiles[row][2].icon;
   }
 
-  bool colIsEqual(int col){
-    if(_values[0][col] == _defaultIcon){
+  bool colIsEqual(int col) {
+    if (_tiles[0][col].icon == _defaultIcon) {
       return false;
     }
-    return _values[0][col] == _values[1][col] &&
-        _values[0][col] == _values[2][col];
+    return _tiles[0][col].icon == _tiles[1][col].icon &&
+        _tiles[0][col].icon == _tiles[2][col].icon;
   }
 
-  bool diagonalIsEqual(){
-    if(_values[0][0] == _defaultIcon || _values[0][2] == _defaultIcon){
+  bool diagonalIsEqual() {
+    if (_tiles[0][0].icon == _defaultIcon ||
+        _tiles[0][2].icon == _defaultIcon) {
       return false;
     }
-    return (
-      _values[0][0] == _values[1][1] &&
-        _values[1][1] == _values[2][2]
-    ) || (
-        _values[0][2] == _values[1][1] &&
-            _values[1][1] == _values[2][0]
-    );
+    return (_tiles[0][0].icon == _tiles[1][1].icon &&
+            _tiles[1][1].icon == _tiles[2][2].icon) ||
+        (_tiles[0][2].icon == _tiles[1][1].icon &&
+            _tiles[1][1].icon == _tiles[2][0].icon);
   }
 
   @override
@@ -119,127 +113,116 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children:[
+          children: [
             Row(
-              children:[
+              children: [
                 IconButton(
-                  icon: Icon(
-                    _values[0][0]
-                  ),
-                  onPressed: _topLeftEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _topLeftEnabled = false;
-                      _makePlay(0, 0);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[0][0].icon),
+                  onPressed: _tiles[0][0].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(0, 0);
+                          });
+                        }
+                      : null,
                 ),
                 IconButton(
-                  icon: Icon(
-                    _values[0][1]
-                  ),
-                  onPressed: _topEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _topEnabled = false;
-                      _makePlay(0, 1);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[0][1].icon),
+                  onPressed: _tiles[0][1].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(0, 1);
+                          });
+                        }
+                      : null,
                 ),
                 IconButton(
-                  icon: Icon(
-                    _values[0][2]
-                  ),
-                  onPressed: _topRightEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _topRightEnabled = false;
-                      _makePlay(0, 2);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[0][2].icon),
+                  onPressed: _tiles[0][2].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(0, 2);
+                          });
+                        }
+                      : null,
                 ),
               ],
             ),
             Row(
-              children:[
+              children: [
                 IconButton(
-                  icon: Icon(
-                    _values[1][0]
-                  ),
-                  onPressed: _leftEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _leftEnabled = false;
-                      _makePlay(1, 0);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[1][0].icon),
+                  onPressed: _tiles[1][0].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(1, 0);
+                          });
+                        }
+                      : null,
                 ),
                 IconButton(
-                  icon: Icon(
-                    _values[1][1]
-                  ),
-                  onPressed: _centerEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _centerEnabled = false;
-                      _makePlay(1, 1);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[1][1].icon),
+                  onPressed: _tiles[1][1].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(1, 1);
+                          });
+                        }
+                      : null,
                 ),
                 IconButton(
-                  icon: Icon(
-                    _values[1][2]
-                  ),
-                  onPressed: _rightEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _rightEnabled = false;
-                      _makePlay(1, 2);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[1][2].icon),
+                  onPressed: _tiles[1][2].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(1, 2);
+                          });
+                        }
+                      : null,
                 ),
               ],
             ),
             Row(
-              children:[
+              children: [
                 IconButton(
-                  icon: Icon(
-                    _values[2][0]
-                  ),
-                  onPressed: _bottomLeftEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _bottomLeftEnabled = false;
-                      _makePlay(2, 0);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[2][0].icon),
+                  onPressed: _tiles[2][0].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(2, 0);
+                          });
+                        }
+                      : null,
                 ),
                 IconButton(
-                  icon: Icon(
-                    _values[2][1]
-                  ),
-                  onPressed: _bottomEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _bottomEnabled = false;
-                      _makePlay(2, 1);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[2][1].icon),
+                  onPressed: _tiles[2][1].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(2, 1);
+                          });
+                        }
+                      : null,
                 ),
                 IconButton(
-                  icon: Icon(
-                    _values[2][2]
-                  ),
-                  onPressed: _bottomRightEnabled && !_gameIsOver ?() {
-                    setState(() {
-                      _bottomRightEnabled = false;
-                      _makePlay(2, 2);
-                    });
-                  }:null,
+                  icon: Icon(_tiles[2][2].icon),
+                  onPressed: _tiles[2][2].enabled && !_gameIsOver
+                      ? () {
+                          setState(() {
+                            _makePlay(2, 2);
+                          });
+                        }
+                      : null,
                 ),
               ],
             ),
-            Text(
-              (_gameIsOver)
-                ?(_winner == 0)
-                  ?"Player Won!"
-                  :(_winner == 1)
-                      ?"Computer Won!!"
-                      :"Cat Won!!"
-                :""
-            ),
+            Text((_gameIsOver)
+                ? (_winner == 0)
+                    ? "Player Won!"
+                    : (_winner == 1)
+                        ? "Computer Won!!"
+                        : "Cat Won!!"
+                : ""),
           ],
         ),
       ),
@@ -251,18 +234,19 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _resetGame(){
+  void _resetGame() {
     setState(() {
-      _resetIcons();
+      _resetTiles();
       _resetCounter();
       _resetBooleanValues();
     });
   }
 
-  void _resetIcons() {
-    for(var i = 0; i < 3; i++){
-      for(var j = 0; j<3; j++){
-        _values[i][j] = _defaultIcon;
+  void _resetTiles() {
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < 3; j++) {
+        _tiles[i][j].icon = _defaultIcon;
+        _tiles[i][j].enabled = true;
       }
     }
   }
@@ -273,14 +257,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _resetBooleanValues() {
     _gameIsOver = false;
-    _topEnabled = true;
-    _rightEnabled = true;
-    _bottomEnabled = true;
-    _leftEnabled = true;
-    _topLeftEnabled = true;
-    _topRightEnabled = true;
-    _bottomLeftEnabled = true;
-    _bottomRightEnabled = true;
-    _centerEnabled = true;
   }
+}
+
+class GameTile {
+  bool enabled = true;
+  IconData icon = Icons.crop_3_2_outlined;
+  GameTile();
 }
